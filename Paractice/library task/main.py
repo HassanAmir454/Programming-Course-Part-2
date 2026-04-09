@@ -1,58 +1,67 @@
-from library import Book, PrintedBook, EBook, display_info_all
+# main.py
+from library import Library, PrintedBook, EBook, AudioBook
 
 def main():
-    books = []
+    library = Library()
 
     while True:
-        print("\n===== Library Menu =====")
-        print("1) Add Printed Book")
-        print("2) Add EBook")
-        print("3) Display All Books")
-        print("4) Calculate Rent")
-        print("0) Exit")
+        print("\n--- Smart Library System ---")
+        print("1 - Add Item")
+        print("2 - List All Items")
+        print("3 - Borrow Item")
+        print("4 - Return Item")
+        print("5 - Save Library")
+        print("6 - Load Library")
+        print("0 - Exit")
 
-        choice = input("Enter choice: ")
+        choice = input("Enter your choice: ")
 
         if choice == "1":
-            book_id = int(input("Enter book id: "))
+            item_type = input("Item type (PrintedBook/EBook/AudioBook): ")
+            item_id = input("Enter item ID: ")
             title = input("Enter title: ")
-            price = float(input("Enter price: "))
-            books.append(PrintedBook(book_id, title, price))
-            print("Printed Book added")
+
+            if item_type == "PrintedBook":
+                author = input("Enter author: ")
+                pages = input("Enter number of pages: ")
+                item = PrintedBook(item_id, title, author, pages)
+            elif item_type == "EBook":
+                author = input("Enter author: ")
+                size = input("Enter file size (MB): ")
+                item = EBook(item_id, title, author, size)
+            elif item_type == "AudioBook":
+                narrator = input("Enter narrator: ")
+                duration = input("Enter duration (minutes): ")
+                item = AudioBook(item_id, title, narrator, duration)
+            else:
+                print("Invalid item type!")
+                continue
+
+            library.add_item(item)
 
         elif choice == "2":
-            book_id = int(input("Enter book id: "))
-            title = input("Enter title: ")
-            price = float(input("Enter price: "))
-            books.append(EBook(book_id, title, price))
-            print("EBook added")
+            library.list_items()
 
         elif choice == "3":
-            if not books:
-                print("No books available")
-            for book in books:
-                book.display_info()
-                book.book_type()
+            item_id = input("Enter item ID to borrow: ")
+            library.borrow_item(item_id)
 
         elif choice == "4":
-            book_id = int(input("Enter book id: "))
-            days = int(input("Enter number of days: "))
-            found = False
+            item_id = input("Enter item ID to return: ")
+            library.return_item(item_id)
 
-            for book in books:
-                if book.get_id() == book_id:
-                    book.calculate_rent(days)
-                    found = True
-                    break
+        elif choice == "5":
+            library.save_to_file()
 
-            if not found:
-                print("Book not found")
+        elif choice == "6":
+            library.load_from_file()
 
         elif choice == "0":
-            print("Exiting program")
+            print("Exiting Smart Library. Goodbye!")
             break
 
         else:
-            print("Invalid choice")
+            print("Invalid choice! Please try again.")
 
-main()
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,2 @@
+type,id,title,borrowed,extra1,extra2
+EBook,123,hello,False,hassan,35

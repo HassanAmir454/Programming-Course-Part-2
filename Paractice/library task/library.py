@@ -1,127 +1,251 @@
 from abc import ABC, abstractmethod
-class Book(ABC):
-    def __init__(self, book_id, title, price):
-        self._book_id = book_id
-        self._title = title
-        self._price = price
+import csv
+class LibraryItem(ABC):
+    def __init__(self, item_id, title, is_borrowed=False):
+        self.__item_id = item_id
+        self.title = title 
+        self.is_borrowed = is_borrowed
 
-    def get_price(self):
-        return self._price
-    
-    def get_id(self):
-        return self._book_id
+    def get_item_id(self):
+        return self.__item_id
+
+    def borrow_item(self):
+        if self.is_borrowed == False:
+            print("Here you go!")
+            self.is_borrowed = True
+        else:
+            print("Sorry, This book is not available.")
+            
+            
+    def return_item(self):
+        print("Thanks for returning the book")
+        self.is_borrowed = False
+
+    @abstractmethod
+    def display_info(self):
+        pass
+
+class PrintedBook(LibraryItem):
+    def __init__(self, item_id, title, author, pages):
+        super().__init__(item_id, title)
+        self.author = author
+        self.pages = int(pages)
     
     def display_info(self):
-        print(f"The price of book '{self._title}' have id {self._book_id} is {self._price} ")
+        print(f"Printed Book: {self.title}")
+        print(f"Author: {self.author}")
+        print(f"Pages: {self.pages}")
 
-    @abstractmethod
-    def calculate_rent(self, days):
-        pass
+class EBook(LibraryItem):
+    def __init__(self, item_id, title, author, file_size):
+        super().__init__(item_id, title)
+        self.author = author
+        self.file_size = file_size
     
-    @abstractmethod
-    def book_type(self):
-        pass
+    def display_info(self):
+        print(f"EBook: {self.title}")
+        print(f"Author: {self.author}")
+        print(f"Size: {self.file_size}")
 
-class PrintedBook(Book):
-    def calculate_rent(self, days):
-        
-        rent = self._price * 0.02 *days
-        if days > 7:
-            print(f"The rent for printed book for {days} days is {rent+50}")
+class AudioBook(LibraryItem):
+    def __init__(self, item_id, title, narrator, duration):
+        super().__init__(item_id, title)
+        self.narrator = narrator
+        self.duration = duration
+    
+    def display_info(self):
+        print(f"AudioBook: {self.title}")
+        print(f"Narrator: {self.narrator}")
+        print(f"Duration: {self.duration}")
+
+
+class Library:
+    def __init__(self):
+        self.items = []
+    
+    def add_item(self, item):
+        self.items.append(item)
+        print("Item added sucessfully")
+
+    def list_items(self):
+        for item in self.items:
+            item.display_info()
+
+    def find_item(self,item_id):
+        for item in self.items:
+            if item.get_item_id() == item_id:
+                return item
+        return None
+    
+    def borrow_item(self, item_id):
+        item = self.find_item(item_id)
+        if item:
+            item.borrow_item()
         else:
-            print(f"The rent for printed book for {days} days is {rent}")
+            print("Item not found")
 
-    def book_type(self):
-        print("Book type is 'Printed book'.")
-
-class EBook(Book):
-    def calculate_rent(self, days):
-        
-        rent = self._price * 0.01 *days
-        if days < 30:
-            print(f"The rent for Ebook for {days} days is {rent}")
+    def return_item(self, item_id):
+        item = self.find_item(item_id)
+        if not item:
+            print("Thanks for returning")
+            self.items.append(item)
         else:
-            print(f"You cannot take on rent for more than 30 days")
+            print("This item was not borrowed")
+        
+    def save_to_file(self):
+        with open("books.csv", "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["type","id","title","borrowed","extra1","extra2"])
+            for item in self.items:
+                if isinstance(item, PrintedBook):
+                    writer.writerow(["PrintedBook", item.get_item_id(), item.title, item.is_borrowed, item.author, item.pages])
+                elif isinstance(item, EBook):
+                    writer.writerow(["EBook", item.get_item_id(), item.title, item.is_borrowed, item.author, item.file_size])
+                elif isinstance(item, AudioBook):
+                    writer.writerow(["AudioBook", item.get_item_id(), item.title, item.is_borrowed, item.narrator, item.duration])
+        print("Data saved successfully.")
+    def load_from_file(self):
+        self.items.clear()
+        with open("books.csv", "r") as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                item_type = row["type"]
+                id = row["id"]
+                title = row["title"]
+                borrowed = row["borrowed"] == "True"
+                extra1 = row["extra1"]
+                extra2 = row["extra2"]
+                if item_type == "PrintedBook":
+                    item = PrintedBook(id, title, extra1, extra2)
+                elif item_type == "EBook":
+                    item = EBook(id, title, extra1, extra2)
+                elif item_type == "AudioBook":
+                    item = AudioBook(id, title, extra1, extra2)
+                item._is_borrowed = borrowed
+                self.items.append(item)
 
-    def book_type(self):
-        print("Book type is 'Ebook'.")
-
-def display_info_all(bookss):
-    if bookss =="":
-        return
-    for book in bookss:
-        print("book", "\n")
 
 
 
 
     
+
+
     
+            
 
 
 
 
 
 
-# Create an abstract class Book.
+# 🧱 Step 1: Abstract Base Class
 
+# Create abstract class:
+
+# LibraryItem
 # Attributes
+# __item_id        (private)
+# title
+# is_borrowed
+# Methods
+# get_item_id()
+# borrow_item()
+# return_item()
+# display_info()   (abstract method)
 
-# _book_id (protected)
+# This forces subclasses to implement their own display.
 
-# _title (protected)
+# 🧬 Step 2: Subclasses (Inheritance)
+# 📚 PrintedBook
 
-# _price (protected)
+# Extra attributes:
 
+# author
+# pages
 
-# Concrete Methods
+# Example display:
 
-# get_price()
+# Printed Book: Python Basics
+# Author: John Smith
+# Pages: 350
+# 💻 EBook
 
-# display_info() → prints ID, title, price
+# Extra attributes:
 
-# Abstract Methods (must be implemented by child classes)
+# author
+# file_size
 
-# calculate_rent(days)
+# Example display:
 
-# book_type()
+# EBook: Machine Learning Guide
+# Author: Andrew Ng
+# Size: 5MB
+# 🎧 AudioBook
 
-# 🔹 STEP 2 — Child Class 1: PrintedBook (Inheritance)
+# Extra attributes:
 
-# Rules:
+# narrator
+# duration
 
-# Rent = days * 10
+# Example display:
 
-# Extra rule: If days > 7 → add late fee = 50
+# AudioBook: Atomic Habits
+# Narrator: James Clear
+# Duration: 6 hours
+# 🏢 Step 3: Library Class
 
-# Must:
+# Create class:
 
-# Inherit Book
+# Library
 
-# Implement all abstract methods
+# Attribute:
 
-# Use _price, not private variables
+# items = []
 
-# 🔹 STEP 3 — Child Class 2: EBook (Inheritance)
+# Methods:
 
-# Rules:
+# add_item(item)
+# list_items()
+# borrow_item(item_id)
+# return_item(item_id)
+# find_item(item_id)
+# save_to_file()
+# load_from_file()
+# 💾 Step 4: Serialization (Save to CSV)
 
-# Rent = days * 5
+# File:
 
-# No late fee
+# books.csv
 
-# Cannot be rented for more than 30 days
+# Columns:
 
-# Must:
+# type,id,title,borrowed,extra1,extra2
 
-# Inherit Book
+# Example:
 
-# Implement all abstract methods
+# PrintedBook,101,Python Basics,False,John Smith,350
+# EBook,102,AI Guide,False,Andrew Ng,5MB
+# AudioBook,103,Atomic Habits,True,James Clear,6 hours
 
-# 🔹 STEP 4 — Encapsulation Rules
+# Use:
 
-# No direct access like book._price from main.py
+# csv.writer
+# 📥 Step 5: Deserialization (Load from CSV)
 
-# All actions must be done using methods
+# Use:
 
-# _price is protected → usable in child classes only
+# csv.DictReader
+
+# Recreate objects:
+
+# if type == "PrintedBook":
+#     item = PrintedBook(...)
+
+# elif type == "EBook":
+#     item = EBook(...)
+
+# elif type == "AudioBook":
+#     item = AudioBook(...)
+
+# Use isinstance() when saving.

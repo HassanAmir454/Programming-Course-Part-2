@@ -1,0 +1,2 @@
+type,id,price,rented,extra1,extra2
+Car,123,1222,False,TOYOTA,5

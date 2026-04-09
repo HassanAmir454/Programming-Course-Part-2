@@ -1,0 +1,77 @@
+PS C:\Lab uni studies\ICT SEMESTER 2\Oops Python> mysql -u root -p
+Enter password: *******
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 17
+Server version: 8.0.45 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> create database university;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use university:
+ERROR 1049 (42000): Unknown database 'university:'
+mysql> use unviversity;
+ERROR 1049 (42000): Unknown database 'unviversity'
+mysql> use university;
+Database changed
+mysql> create table roles (id int auto_increment primary key, role varchar(50) );                                                           
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> create table users (user_id int auto_increment primary key, name varchar(50), email varchar(50) Not null unique, role_id, Foreign key (role_id) refrences roles(id) );
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', Foreign key (role_id) refrences roles(id) )' at line 1
+mysql> create table users (user_id int auto_increment primary key, name varchar(50), email varchar(50) Not null unique, role_id int, Foreign
+ key (role_id) references roles(id) );
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> insert into roles (role) values ("student"), ("Teacher"), ("Supervisor"), ("Parent");
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> insert into users (name, email, role_id) values ("Ali", "ali@gmail.com", 1), ("Hassan", "hassan@outlook.com", 1), ("Mira, "Mira.Vourn
+e@gmail.com, 2), ("Father", "father@gmail.com", 4);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'Mira.Vourne@gmail.com, 2), ("Father", "father@gmail.com", 4)' at line 1
+mysql> insert into users (name, email, role_id) values ("Ali", "ali@gmail.com", 1), ("Hassan", "hassan@outlook.com", 1), ("Mira", "Mira.Vour
+ne@gmail.com", 2), ("Father", "father@gmail.com", 4);
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> select * from roles and users;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'and users' at line 1
+mysql> SELECT * FROM roles;SELECT * FROM users;
++----+------------+
+| id | role       |
++----+------------+
+|  1 | student    |
+|  2 | Teacher    |
+|  3 | Supervisor |
+|  4 | Parent     |
++----+------------+
+4 rows in set (0.00 sec)
+
++---------+--------+-----------------------+---------+
+| user_id | name   | email                 | role_id |
++---------+--------+-----------------------+---------+
+|       1 | Ali    | ali@gmail.com         |       1 |
+|       2 | Hassan | hassan@outlook.com    |       1 |
+|       3 | Mira   | Mira.Vourne@gmail.com |       2 |
+|       4 | Father | father@gmail.com      |       4 |
++---------+--------+-----------------------+---------+
+4 rows in set (0.00 sec)
+
+mysql> select users.name, users.email, roles.role from users join roles on users.role_id = roles.id;
++--------+-----------------------+---------+
+| name   | email                 | role    |
++--------+-----------------------+---------+
+| Ali    | ali@gmail.com         | student |
+| Hassan | hassan@outlook.com    | student |
+| Mira   | Mira.Vourne@gmail.com | Teacher |
+| Father | father@gmail.com      | Parent  |
++--------+-----------------------+---------+
+4 rows in set (0.00 sec)
