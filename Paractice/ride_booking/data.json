@@ -1,0 +1,6 @@
+{
+  "drivers": [
+    {"id": 1, "name": "Ali", "email": "ali@mail.com", "vehicle_name": "Toyota", "available": true},
+    {"id": 2, "name": "John", "email": "john@mail.com", "vehicle_name": "Honda", "available": true}
+  ]
+}
